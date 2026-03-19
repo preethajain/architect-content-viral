@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BUILT — Architecture Instagram Strategy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --cream-dark: #EDE6D6;
+    --parchment: #E8DFCC;
+    --beige: #D4C5A9;
+    --sand: #C4AF8E;
+    --gold: #B8983F;
+    --gold-light: #D4AF55;
+    --gold-pale: #E8D89A;
+    --charcoal: #1C1C1A;
+    --ink: #2A2A26;
+    --ash: #5A5A54;
+    --warm-grey: #8A8478;
+    --rust: #8B4513;
+    --terracotta: #C0714A;
+    --forest: #3D4F3A;
+    --white: #FEFCF8;
+    --border: rgba(180,165,135,0.35);
+    --border-dark: rgba(180,165,135,0.6);
+    --shadow: 0 4px 40px rgba(28,28,26,0.08);
+    --shadow-hover: 0 12px 60px rgba(28,28,26,0.14);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1, h2, h3, h4 { font-family: 'Playfair Display', serif; line-height: 1.15; }
+  .serif-light { font-family: 'Cormorant Garamond', serif; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 900;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ash);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 0 6rem;
+    padding-top: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    right: -5%;
+    width: 55%;
+    height: 120%;
+    background: radial-gradient(ellipse at center, rgba(184,152,63,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    background: var(--gold);
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    font-weight: 900;
+    color: var(--charcoal);
+    line-height: 1.0;
+    margin-bottom: 2rem;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    color: var(--ash);
+    font-weight: 300;
+    max-width: 38ch;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+  }
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    margin-top: 0.3rem;
+  }
+  .hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .hero-diagram {
+    width: 420px;
+    height: 420px;
+    position: relative;
+  }
+  .diagram-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--border-dark);
+    animation: rotateRing 20s linear infinite;
+  }
+  .diagram-ring:nth-child(1) { inset: 0; }
+  .diagram-ring:nth-child(2) { inset: 15%; animation-direction: reverse; animation-duration: 30s; border-style: dashed; }
+  .diagram-ring:nth-child(3) { inset: 30%; animation-duration: 15s; }
+  .diagram-center {
+    position: absolute;
+    inset: 40%;
+    border-radius: 50%;
+    background: var(--charcoal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-light);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .diagram-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    transform: translate(-50%, -50%);
+  }
+  @keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ── SECTION WRAPPER ── */
+  section {
+    padding: 7rem 6rem;
+    position: relative;
+  }
+  section.alt-bg { background: var(--cream-dark); }
+  section.dark-bg {
+    background: var(--charcoal);
+    color: var(--cream);
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 4rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: inherit;
+    line-height: 1.1;
+  }
+  .section-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    font-weight: 300;
+    color: var(--beige);
+    line-height: 1;
+  }
+  .dark-bg .section-num { color: rgba(255,255,255,0.08); }
+
+  /* ── CONTENT PILLARS ── */
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .pillar-card {
+    background: var(--white);
+    padding: 2.5rem 1.75rem;
+    transition: all 0.35s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .pillar-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.35s ease;
+    transform-origin: left;
+  }
+  .pillar-card:hover::before { transform: scaleX(1); }
+  .pillar-card:hover { background: var(--cream); }
+  .pillar-icon {
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem;
+    display: block;
+  }
+  .pillar-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+  }
+  .pillar-desc {
+    font-size: 0.78rem;
+    color: var(--ash);
+    line-height: 1.65;
+  }
+  .pillar-pct {
+    margin-top: 1.5rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* ── CONTENT IDEA CARDS ── */
+  .ideas-section { background: var(--white); }
+  .category-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    margin-top: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .category-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .idea-card {
+    background: var(--white);
+    padding: 0;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    cursor: default;
+  }
+  .idea-card:hover { background: var(--cream); }
+  .idea-card-header {
+    background: var(--charcoal);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .idea-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.1em;
+    flex-shrink: 0;
+    padding-top: 0.1rem;
+  }
+  .idea-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--cream);
+    line-height: 1.35;
+    flex: 1;
+  }
+  .idea-badge {
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(184,152,63,0.2);
+    color: var(--gold-light);
+    border: 1px solid rgba(184,152,63,0.4);
+    padding: 0.2rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .idea-card-body { padding: 1.5rem; }
+  .idea-field {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .idea-field:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .idea-field-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.35rem;
+    font-weight: 500;
+  }
+  .idea-field-val {
+    font-size: 0.8rem;
+    color: var(--ash);
+    line-height: 1.6;
+  }
+  .idea-field-val strong { color: var(--ink); font-weight: 500; }
+
+  /* ── VIRAL SERIES ── */
+  .series-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--sand);
+  }
+  .series-card {
+    background: var(--charcoal);
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .series-card:hover { background: #26261F; }
+  .series-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+  }
+  .series-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .series-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .series-desc {
+    font-size: 0.82rem;
+    color: rgba(245,240,232,0.55);
+    line-height: 1.65;
+    margin-bottom: 1.5rem;
+  }
+  .series-episodes { list-style: none; }
+  .series-episodes li {
+    font-size: 0.75rem;
+    color: rgba(245,240,232,0.7);
+    padding: 0.4rem 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .series-episodes li::before {
+    content: '→';
+    color: var(--gold);
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+
+  /* ── FUNNEL ── */
+  .funnel-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .funnel-stage {
+    padding: 3rem;
+    position: relative;
+    border-right: 1px solid var(--border);
+  }
+  .funnel-stage:last-child { border-right: none; }
+  .funnel-stage-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    margin-bottom: 0.75rem;
+  }
+  .funnel-stage-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--charcoal);
+  }
+  .funnel-stage-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--ash);
+    margin-bottom: 2rem;
+    font-style: italic;
+  }
+  .funnel-items { list-style: none; }
+  .funnel-items li {
+    font-size: 0.78rem;
+    color: var(--ash);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.75rem;
+  }
+  .funnel-items li .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 0.45rem;
+  }
+  .funnel-bar {
+    height: 4px;
+    margin-top: 2rem;
+    border-radius: 2px;
+  }
+  .funnel-bar.top { background: var(--beige); width: 100%; }
+  .funnel-bar.mid { background: var(--sand); width: 70%; }
+  .funnel-bar.bot { background: var(--gold); width: 40%; }
+
+  /* ── CALENDAR ── */
+  .calendar-section { background: var(--cream-dark); }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-dark);
+    border: 1px solid var(--border-dark);
+  }
+  .cal-header {
+    background: var(--charcoal);
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.5);
+  }
+  .cal-cell {
+    background: var(--white);
+    padding: 0.75rem;
+    min-height: 80px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .cal-cell:hover { background: var(--cream); }
+  .cal-day-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--beige);
+    margin-bottom: 0.4rem;
+    font-weight: 300;
+  }
+  .cal-content-type {
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+  }
+  .cal-content-type.reel { color: var(--terracotta); }
+  .cal-content-type.carousel { color: var(--forest); }
+  .cal-content-type.story { color: var(--gold); }
+  .cal-topic {
+    font-size: 0.65rem;
+    color: var(--ash);
+    line-height: 1.35;
+  }
+  .cal-empty {
+    background: var(--cream-dark);
+    min-height: 80px;
+  }
+
+  /* ── VIRAL REELS ── */
+  .viral-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .viral-card {
+    border: 1px solid var(--border);
+    padding: 2rem 2.25rem;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .viral-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, var(--gold), var(--terracotta));
+  }
+  .viral-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+  .viral-trend {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin-bottom: 0.75rem;
+  }
+  .viral-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+  .viral-hook {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.92rem;
+    color: var(--ash);
+    font-style: italic;
+    padding-left: 1rem;
+    border-left: 2px solid var(--gold-pale);
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+  .viral-why {
+    font-size: 0.73rem;
+    color: var(--warm-grey);
+    line-height: 1.55;
+  }
+
+  /* ── BRAND STYLE GUIDE ── */
+  .brand-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 3rem;
+  }
+  .brand-card {
+    background: var(--charcoal);
+    padding: 2.5rem;
+    color: var(--cream);
+  }
+  .brand-card-icon { font-size: 1.5rem; margin-bottom: 1.25rem; }
+  .brand-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 1.25rem;
+  }
+  .brand-rules { list-style: none; }
+  .brand-rules li {
+    font-size: 0.75rem;
+    color: rgba(245,240,232,0.65);
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    gap: 0.75rem;
+    line-height: 1.5;
+  }
+  .brand-rules li::before { content: '—'; color: var(--gold); flex-shrink: 0; }
+
+  /* ── CONVERSION ── */
+  .conversion-steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0;
+    position: relative;
+  }
+  .conversion-steps::before {
+    content: '';
+    position: absolute;
+    top: 2.5rem;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+  .conv-step {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+  }
+  .conv-num {
+    width: 3rem; height: 3rem;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+  .conv-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+  }
+  .conv-desc {
+    font-size: 0.72rem;
+    color: var(--ash);
+    line-height: 1.6;
+  }
+
+  /* ── TANGLISH SCRIPTS ── */
+  .scripts-section { background: var(--charcoal); }
+  .scripts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  .script-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .script-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), var(--terracotta));
+  }
+  .script-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    color: rgba(255,255,255,0.05);
+    font-weight: 300;
+    line-height: 1;
+    margin-bottom: -1rem;
+  }
+  .script-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+  .script-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+  }
+  .script-body {
+    font-size: 0.78rem;
+    color: rgba(245,240,232,0.7);
+    line-height: 1.8;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .script-body .hook {
+    color: var(--gold-light);
+    font-weight: 500;
+    font-size: 0.82rem;
+  }
+  .script-body .cta {
+    color: var(--terracotta);
+    font-size: 0.72rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    padding: 4rem 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .footer-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+  .footer-brand span { color: var(--gold); }
+  .footer-note {
+    font-size: 0.68rem;
+    color: rgba(245,240,232,0.3);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-content > * {
+    animation: fadeUp 0.7s ease both;
+  }
+  .hero-eyebrow { animation-delay: 0.1s; }
+  .hero h1 { animation-delay: 0.2s; }
+  .hero-sub { animation-delay: 0.35s; }
+  .hero-stats { animation-delay: 0.5s; }
+  .hero-visual { animation: fadeUp 1s ease 0.4s both; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1200px) {
+    section { padding: 5rem 3rem; }
+    .hero { padding: 0 3rem; padding-top: 64px; }
+    .ideas-grid { grid-template-columns: repeat(2, 1fr); }
+    .pillars-grid { grid-template-columns: repeat(3, 1fr); }
+    .conversion-steps { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { display: none; }
+    section { padding: 4rem 1.5rem; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+    .hero-visual { display: none; }
+    .ideas-grid { grid-template-columns: 1fr; }
+    .series-grid { grid-template-columns: 1fr; }
+    .funnel-wrapper { grid-template-columns: 1fr; }
+    .brand-grid { grid-template-columns: 1fr; }
+    .scripts-grid { grid-template-columns: 1fr; }
+    .viral-grid { grid-template-columns: 1fr; }
+    .calendar-grid { grid-template-columns: repeat(4, 1fr); }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2.5rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">BU<span>I</span>LT</div>
+  <ul class="nav-links">
+    <li><a href="#pillars">Pillars</a></li>
+    <li><a href="#ideas">Ideas</a></li>
+    <li><a href="#series">Series</a></li>
+    <li><a href="#calendar">Calendar</a></li>
+    <li><a href="#brand">Brand</a></li>
+    <li><a href="#scripts">Scripts</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="padding-top:64px">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Instagram Strategy · Architecture · India</div>
+    <h1>Design<br>Your <em>Feed</em><br>Like a<br>Blueprint.</h1>
+    <p class="hero-sub">A premium content strategy built for architects who want to educate, inspire, and convert — on Instagram.</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">50+</div>
+        <div class="stat-label">Content Ideas</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Viral Series</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">30</div>
+        <div class="stat-label">Day Calendar</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-diagram">
+      <div class="diagram-ring"></div>
+      <div class="diagram-ring"></div>
+      <div class="diagram-ring"></div>
+      <div class="diagram-center">BUILT<br>IN</div>
+      <div class="diagram-dot" style="top:8%;left:50%"></div>
+      <div class="diagram-dot" style="top:50%;left:95%"></div>
+      <div class="diagram-dot" style="top:92%;left:50%"></div>
+      <div class="diagram-dot" style="top:50%;left:5%"></div>
+      <div class="diagram-dot" style="top:18%;left:82%" style="background:var(--terracotta)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT PILLARS -->
+<section id="pillars" class="alt-bg">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Foundation</div>
+      <h2 class="section-title">Five Content Pillars</h2>
+    </div>
+    <div class="section-num">01</div>
+  </div>
+  <div class="pillars-grid">
+    <div class="pillar-card">
+      <span class="pillar-icon">📐</span>
+      <div class="pillar-name">Education</div>
+      <div class="pillar-desc">Technical knowledge made digestible. BOQ, materials, approvals, construction checks. You become the smartest person in their feed.</div>
+      <div class="pillar-pct">35% of content</div>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-icon">⚡</span>
+      <div class="pillar-name">Myth-Busting</div>
+      <div class="pillar-desc">Challenge what homeowners think they know. Pinterest ≠ Design. Cheap architect = expensive mistake. Viral by nature.</div>
+      <div class="pillar-pct">25% of content</div>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-icon">🔍</span>
+      <div class="pillar-name">Client Awareness</div>
+      <div class="pillar-desc">Builder scams, contract traps, material fraud. Position yourself as the consumer's advocate in a space full of predators.</div>
+      <div class="pillar-pct">20% of content</div>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-icon">😌</span>
+      <div class="pillar-name">Relatable Life</div>
+      <div class="pillar-desc">Architect humor, student struggles, Gen Z energy. Makes your brand human. Community content that gets shared between peers.</div>
+      <div class="pillar-pct">10% of content</div>
+    </div>
+    <div class="pillar-card">
+      <span class="pillar-icon">✦</span>
+      <div class="pillar-name">Personal Brand</div>
+      <div class="pillar-desc">Your process, your fees, your projects, your philosophy. Converts warm followers into project inquiries.</div>
+      <div class="pillar-pct">10% of content</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT IDEAS -->
+<section id="ideas" class="ideas-section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">The Arsenal</div>
+      <h2 class="section-title">30 Content Ideas</h2>
+    </div>
+    <div class="section-num">02</div>
+  </div>
+
+  <!-- EDUCATIONAL -->
+  <div class="category-label">Educational — High Authority</div>
+  <div class="ideas-grid">
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">01</span>
+        <div class="idea-title">What Is a BOQ and Why Your Builder Hides It</div>
+        <span class="idea-badge">Carousel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Your contractor gave you a quote. You agreed. Then the bills never stopped. Here's why."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">What a Bill of Quantities is, why builders avoid giving one, and how it protects you from scope creep and hidden costs.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Desk with documents → Close-up of BOQ sheet → Vague quote vs itemized BOQ comparison → Confident talking head delivery</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Most homeowners sign without a BOQ. That's like buying a car without knowing the engine specs. Here's what to ask for." #BOQ #HomeConstruction</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Talking head + document B-roll. Clean white background.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">02</span>
+        <div class="idea-title">M-Sand vs River Sand: The Test Your Builder Won't Do</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Two bags of sand. Same price. One will crack your walls in 5 years. I'll show you how to tell the difference right now."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Physical and visual tests to identify M-sand vs river sand — texture, dust content, water absorption — and their impact on concrete strength.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Two sand piles labeled → Rub test (dust on palm) → Water test (clumping) → Concrete quality comparison graphic → CTA</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Your builder will never do this test in front of you. Learn to do it yourself." #SandQuality #BuilderScam</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Cinematic close-ups. Natural outdoor light. Educational + visual.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">03</span>
+        <div class="idea-title">Climate Responsive Design for Tamil Nadu Homes</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Your AC is running 12 hours a day because your house was designed for London, not Chennai."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Principles of climate-responsive design for TN — orientation, ventilation, jaali walls, overhanging eaves, and roof design for heat reduction.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook on-site → Sun direction diagram → Jaali wall footage → Overhanging eave example → Energy bill comparison graphic</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"The best AC is good architecture. Orientation alone can cut cooling costs by 30%." #ClimateDesign #TamilNaduHomes</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Voiceover + cinematic shots mixing old Tamil homes with modern examples.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">04</span>
+        <div class="idea-title">Electrical Layout Mistakes That Cost You After Move-In</div>
+        <span class="idea-badge">Carousel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"The electrician left. Walls are plastered. Now there's a plug point behind your sofa. Here's how to prevent this."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Common Indian home electrical mistakes — wrong switch heights, no dedicated AC circuits, missing kitchen plugs, poor DB box placement.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook → Switch height diagram → AC point placement → Kitchen circuit plan → Checklist slide → Save CTA</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Electrical mistakes happen because nobody told you what to check before the walls closed. Swipe — your future self thanks you." #HomeConstruction</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Bold infographic carousel with floor plan diagrams. High save rate format.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">05</span>
+        <div class="idea-title">Self-Declaration Approval: What Every Chennai Homeowner Needs to Know</div>
+        <span class="idea-badge">Carousel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"You can get your home approved without visiting the CMDA office 10 times. Here's the system nobody told you about."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Step-by-step guide to Tamil Nadu's self-declaration approval — eligibility, documents, process, common mistakes that get it rejected.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook → What it is → Eligibility criteria → Documents needed → Common mistakes → CTA to DM for help</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Tamil Nadu's self-declaration system exists — but 90% of homeowners don't know how to use it." #CMDA #TamilNaduConstruction</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Clean carousel. Navy + gold palette. Strong local relevance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">06</span>
+        <div class="idea-title">What I Actually Do at a First Site Visit</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Most people think architects take measurements. Here's what I'm actually thinking when I walk your site for the first time."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Real first site visit process — sun path analysis, drainage, neighbors, access, trees, soil type, views, noise sources.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Arrive at site → Compass/phone for orientation → Existing trees → Drainage slope → Neighbor buildings → Quick notepad sketch</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Site analysis is the invisible foundation of every successful project. Before a single line is drawn, this is what we study." #SiteAnalysis</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">POV-style. Real site. Unscripted feel. High authenticity.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MYTH BUSTING -->
+  <div class="category-label">Viral — Myth-Busting</div>
+  <div class="ideas-grid">
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">07</span>
+        <div class="idea-title">I Asked AI to Design a House. Here's Everything It Got Wrong.</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"I asked AI to design my house. Here's everything it got wrong."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Screen-record an AI-generated floor plan. Annotate every structural, code, and livability problem. Show what a professional plan looks like instead.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Screen recording of AI plan → Annotate issues (no structural walls, wrong toilet vent, stair width) → Professional plan → Confident closing statement</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"AI generates pretty pictures. It cannot check if your toilet ventilates or if your staircase meets NBC norms. Here's why." #AIvsArchitect</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Screen record + talking head. Slightly sarcastic tone. High share potential.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">08</span>
+        <div class="idea-title">Myth: Architects Are Only for Rich People</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Not hiring an architect is one of the most expensive decisions a middle-class family can make. Here's the actual math."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Economic argument: show how 5–8% architect fees save 20–30% in contractor overcharging, material waste, and rework costs.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook → Budget overrun stats → What architect supervision catches → Fee as % of project cost → Real numbers on screen</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Homeowners skip ₹2L in architect fees. Then lose ₹12L in rework. Do the math." #AffordableArchitecture #HomeBuilding</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Straight-talk to camera. Numbers-driven. Confident and slightly provocative.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">09</span>
+        <div class="idea-title">Myth: Open Plan Kitchens Always Work</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Everyone wants an open kitchen. Five years in, everyone wants a wall back."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Practical problems with open plans in the Indian context — cooking smells, sound, privacy, AC efficiency, cultural dynamics.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Beautiful open plan image → Problem list (smell, sound, privacy) → Semi-open solution visual → When it actually works in India</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Open plan living looks incredible in renders. In a real Indian home with pressure cooking and joint families? Let's talk." #KitchenDesign</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Slightly humorous. Real talk. Quick cuts. High relatable factor.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">10</span>
+        <div class="idea-title">5 Ways Builders Overcharge You (And How to Catch Them)</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Your builder quoted ₹1800/sqft. By the time you moved in, you paid ₹2800. Here's exactly where the money went."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Expose common builder tactics: scope creep, material substitution, measurement fraud, verbal agreement traps, hidden extras.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook to camera → List each scam with visual → How each is caught → Protective measures → Strong CTA</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Builder scams don't look like scams. They look like small changes and friendly handshakes." #BuilderScam #ConsumerAwareness</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Authoritative. List-style breakdown. On-site delivery preferred.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">11</span>
+        <div class="idea-title">Myth: Good Architecture = Good Looks</div>
+        <span class="idea-badge">Carousel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Instagram made everyone think architecture is about aesthetics. It's actually about solving problems you don't know you have yet."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Contrast pretty vs functional — storage, circulation, future-proofing, maintenance ease. How to spot real design quality beyond visuals.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Stunning home photo → Annotated problems → What good design solves → How to evaluate → Questions to ask your architect</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"The most beautiful homes on Instagram often have the worst circulation and no storage. Here's how to spot REAL good design." #DesignThinking</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Visual split carousel — beautiful image vs annotated floor plan. High engagement.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">12</span>
+        <div class="idea-title">Hot Take: Indian Architecture Education Is Broken</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"5 years. ₹15 lakhs in fees. And most graduates can't read a structural drawing. Let's be honest about this."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Critique of architecture education in India — theory-heavy, no site exposure, outdated curriculum. What should change. What students can do now.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Bold hook → What colleges teach vs what field needs → Specific gaps → What should change → What YOU can do right now</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"This will upset some professors. But every architecture student deserves to hear it." #ArchitectureEducation #HotTake</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Confident opinion piece. Bold. Critique with solutions — not just complaints.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RELATABLE GEN Z -->
+  <div class="category-label">Relatable — Gen Z Architect Life</div>
+  <div class="ideas-grid">
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">13</span>
+        <div class="idea-title">Architect Brain vs Normal Person Brain</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"When everyone else sees a coffee shop, I'm calculating the ceiling height and judging the column spacing."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Funny list of things architects can't stop noticing — wrong door swing, badly placed AC, no ventilation in toilets, low ceiling heights.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook in café → Point at door swing issue → Fan in wrong spot → Toilet with no window → Exasperated expression → Relatable close</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Being an architect means you can never just enjoy a space. You're always fixing it in your head." #ArchitectLife #DesignNerd</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Trending audio. POV style. Light and funny. High share.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">14</span>
+        <div class="idea-title">Architecture College vs Reality</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"4 years of college. First client call: 'Bhaiya, can you just copy this from Pinterest?'"</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Expectation vs reality — beautiful models vs AutoCAD all night, design concepts vs client demands, idealism vs first salary.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">College model → Reality: AutoCAD 2am. Design concept → Reality: 'match the neighbor's house'. Dream salary → Actual ₹12K.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Architecture college sells you a dream. The profession hands you a reality check. Here's mine." #ArchLife #IndianArchitect</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Fast cuts. Expectation vs reality format. Self-aware humor.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">15</span>
+        <div class="idea-title">When the Client Approves the Design... Then Says 'Actually'</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Design approved. Model done. BOQ ready. 'Achha, ek chhota sa change...' 🙂"</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">The universal architect experience of late-stage design changes. Funny, cathartic, deeply relatable. Humanizes the profession.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Hook → The change montage (each bigger than the last) → Architect reaction face → Still smiling in client meeting</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Every architect has that one project. You know exactly what I mean." #ArchitectLife #ClientProblems</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Trending audio. Reaction style. Extremely shareable.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EMOTIONAL -->
+  <div class="category-label">Emotional — Perspective-Based</div>
+  <div class="ideas-grid">
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">16</span>
+        <div class="idea-title">House vs Home: The Design Difference That Changes Everything</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"A house is four walls and a roof. A home is the reason your grandmother asks to die there."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">What makes a space feel like home — natural light, ritual space, memory, identity. What architects actually design for beyond structure.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Voiceover over old house footage → Light on familiar objects → The corner where someone always sat → Close with what design really is</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Architecture at its best doesn't make buildings. It makes places where lives are lived." #HouseVsHome #DesignPhilosophy</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Cinematic. Slow. Voice-led. Emotional music. Deep reach potential.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">17</span>
+        <div class="idea-title">Why Architects Burn Out — And Why We Stay Anyway</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Nobody warns you that architecture will cost you sleep, relationships, and sometimes your sense of self."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">Honest look at architect mental health — long hours, low early pay, client stress — but also the deep meaning in the work that keeps you going.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Late night at desk → Honest monologue → Completed project footage → "Then a client walks in and says: this is exactly how I imagined my life."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Architecture is one of the most emotionally demanding creative professions in India. Nobody talks about this. Until now." #ArchitectMentalHealth</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Vulnerable. Direct. No professional distance. Very high resonance.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">18</span>
+        <div class="idea-title">The First Time I Walked Into a Building I Designed</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"The floor was the same cement I specified. The light fell exactly where I placed the window. And I cried."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">The emotional first-time experience of seeing a design become physical space. Celebrates the profession. Deep human moment.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Walking into completed project → Touching the wall → Standing in the light → Honest emotional monologue to camera</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"Nothing prepares you for the moment you walk into a space that was once just lines on paper. This is why we do it." #ArchitectureLife</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Cinematic. Quiet. Powerful. No music until the final frame.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">19</span>
+        <div class="idea-title">What My Client Taught Me About Design</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"I thought I was designing her kitchen. She was teaching me what 'enough' actually means."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">A real anonymized client story that shaped a design philosophy. The power of listening over dictating. Human-centered design in practice.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Voiceover over sketch → Client brief (simple) → What we designed together → The lesson → What I carry into every project now</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"The best design insight didn't come from a book. It came from a client who just wanted to make chai without twisting her back." #DesignPhilosophy</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Narrative voiceover. Warm and personal. Real project photos.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">20</span>
+        <div class="idea-title">Why Indian Homes All Look the Same</div>
+        <span class="idea-badge">Reel</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">Hook (0–3s)</div>
+          <div class="idea-field-val">"Every apartment in Chennai looks identical. Every villa in Hyderabad looks identical. This is not an accident."</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Concept</div>
+          <div class="idea-field-val">How speculative real estate drives architectural monotony — no context, no climate response, just maximized FSI. What breaks the mold.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Shot List</div>
+          <div class="idea-field-val">Aerial of identical apartments → Developer economics explanation → Examples of contextual Indian architecture → What clients can demand</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Caption</div>
+          <div class="idea-field-val">"When profit per sqft becomes the design brief, every building looks the same." #IndianArchitecture #UrbanDesign</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Style</div>
+          <div class="idea-field-val">Documentary feel. Slightly political. Intelligent tone.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="idea-card">
+      <div class="idea-card-header">
+        <span class="idea-num">21–30</span>
+        <div class="idea-title">More Ideas: Personal Brand + Advanced Topics</div>
+        <span class="idea-badge">Mixed</span>
+      </div>
+      <div class="idea-card-body">
+        <div class="idea-field">
+          <div class="idea-field-label">My Fee Structure (Transparency Reel)</div>
+          <div class="idea-field-val">"Architects in India are afraid to talk about money. I'm not." — Percentage-based vs fixed fee. Why cheapest = most expensive.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">False Ceiling Mistakes (Reel)</div>
+          <div class="idea-field-val">"₹2 lakhs on a false ceiling that made the home feel like a cave." — Height, lighting, AC duct conflict, cove detail.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">How to Read a Floor Plan (Carousel)</div>
+          <div class="idea-field-val">"Your architect showed you drawings. You nodded. You had no idea. Let's fix that." — North arrow, wall thickness, door swings.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">Budget Home vs Builder Mindset (Reel)</div>
+          <div class="idea-field-val">"Budget homes fail not because of lack of money. They fail because of lack of design." — Same budget, better-planned layout.</div>
+        </div>
+        <div class="idea-field">
+          <div class="idea-field-label">5 Design Details That Look Expensive but Cost Nothing (Reel)</div>
+          <div class="idea-field-val">Shadow gaps, flush skirting, recessed handles, minimal frames. Premium aesthetic at low cost.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- VIRAL SERIES -->
+<section id="series" class="dark-bg">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow" style="color:var(--gold-light)">Binge-Worthy</div>
+      <h2 class="section-title" style="color:var(--cream)">8 Viral Series</h2>
+    </div>
+    <div class="section-num">03</div>
+  </div>
+  <div class="series-grid">
+    <div class="series-card" data-num="01">
+      <div class="series-tag">Series 01 · Weekly</div>
+      <div class="series-name">Things Builders Won't Tell You</div>
+      <div class="series-desc">Weekly exposé revealing contractor tactics, material shortcuts, pricing games, and legal grey areas. Positions you as the consumer's architect.</div>
+      <ul class="series-episodes">
+        <li>The BOQ they never give you</li>
+        <li>The material switch game</li>
+        <li>Why your quote always doubles</li>
+        <li>Measurement fraud explained</li>
+        <li>Why verbal agreements are traps</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="02">
+      <div class="series-tag">Series 02 · Pre-Build</div>
+      <div class="series-name">Before You Build Your House, Watch This</div>
+      <div class="series-desc">Pre-construction education for first-time homeowners. Captures people in the highest-intent decision stage. Strongest lead magnet series.</div>
+      <ul class="series-episodes">
+        <li>How to choose your plot</li>
+        <li>How to choose your architect</li>
+        <li>Understanding your approval</li>
+        <li>Reading your construction contract</li>
+        <li>Setting your real budget</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="03">
+      <div class="series-tag">Series 03 · Humor</div>
+      <div class="series-name">Architect vs Reality</div>
+      <div class="series-desc">Split-screen comparison of architecture school ideals vs real project life. Humorous, honest, deeply relatable. Builds community among professionals.</div>
+      <ul class="series-episodes">
+        <li>The brief vs the actual brief</li>
+        <li>The render vs the site</li>
+        <li>The timeline vs what actually happened</li>
+        <li>The client's Pinterest vs your design</li>
+        <li>The budget planned vs the budget you had</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="04">
+      <div class="series-tag">Series 04 · Budget</div>
+      <div class="series-name">Design for ₹X Lakhs</div>
+      <div class="series-desc">Show what great design looks like at ₹30L, ₹50L, ₹1Cr, ₹2Cr. Practical, aspirational, search-optimized. Highest lead conversion potential.</div>
+      <ul class="series-episodes">
+        <li>What ₹30 lakhs buys in Chennai</li>
+        <li>A beautiful ₹50L home (real project)</li>
+        <li>₹1 crore: where does it all go?</li>
+        <li>Luxury at ₹2Cr — what actually changes?</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="05">
+      <div class="series-tag">Series 05 · Documentary</div>
+      <div class="series-name">Tamil Nadu Architect Diaries</div>
+      <div class="series-desc">Documentary-style series following a real project from first brief to handover. Your most powerful personal brand content. Long-form trust building.</div>
+      <ul class="series-episodes">
+        <li>Finding the plot</li>
+        <li>The first client meeting</li>
+        <li>Design development week</li>
+        <li>On site — week one</li>
+        <li>Handover day</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="06">
+      <div class="series-tag">Series 06 · Climate</div>
+      <div class="series-name">Climate + Architecture: TN Series</div>
+      <div class="series-desc">Deep dive into climate-responsive design specifically for South Indian conditions — heat, monsoon, humidity, coastal exposure. Nobody owns this niche.</div>
+      <ul class="series-episodes">
+        <li>Orientation: the free AC</li>
+        <li>Jaali walls and passive ventilation</li>
+        <li>Roof design for Chennai summers</li>
+        <li>Monsoon-proofing your terrace</li>
+        <li>The courtyard house and why it works</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="07">
+      <div class="series-tag">Series 07 · Community</div>
+      <div class="series-name">Ask an Architect</div>
+      <div class="series-desc">Q&A series answering real DM questions. Builds community, drives DMs, keeps algorithm fed. Positions you as approachable expert.</div>
+      <ul class="series-episodes">
+        <li>Can I build on my terrace?</li>
+        <li>Architect or draftsman — which do I need?</li>
+        <li>My builder disappeared — what now?</li>
+        <li>Can I change design after approval?</li>
+      </ul>
+    </div>
+    <div class="series-card" data-num="08">
+      <div class="series-tag">Series 08 · Critique</div>
+      <div class="series-name">Good Design, Bad Design</div>
+      <div class="series-desc">Side-by-side critique of real spaces — what works, what doesn't, and why. Highly engaging opinion format. Establishes design authority.</div>
+      <ul class="series-episodes">
+        <li>Chennai apartment lobbies</li>
+        <li>South Indian hotel bathrooms</li>
+        <li>IT corridor office spaces</li>
+        <li>Builder floor plans vs architect plans</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT FUNNEL -->
+<section id="funnel">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Strategy</div>
+      <h2 class="section-title">The Content Funnel</h2>
+    </div>
+    <div class="section-num">04</div>
+  </div>
+  <div class="funnel-wrapper">
+    <div class="funnel-stage">
+      <div class="funnel-stage-label">Top of Funnel</div>
+      <div class="funnel-stage-title">Reach</div>
+      <div class="funnel-stage-sub">Strangers discover you</div>
+      <ul class="funnel-items">
+        <li><span class="dot"></span>Viral myth-busting reels</li>
+        <li><span class="dot"></span>Builder scam exposés</li>
+        <li><span class="dot"></span>Gen Z architect humor</li>
+        <li><span class="dot"></span>AI vs architect takes</li>
+        <li><span class="dot"></span>Trending format + architecture topic</li>
+        <li><span class="dot"></span>Controversial opinions</li>
+      </ul>
+      <div class="funnel-bar top"></div>
+    </div>
+    <div class="funnel-stage">
+      <div class="funnel-stage-label">Middle of Funnel</div>
+      <div class="funnel-stage-title">Trust</div>
+      <div class="funnel-stage-sub">Followers become believers</div>
+      <ul class="funnel-items">
+        <li><span class="dot"></span>Educational deep-dives</li>
+        <li><span class="dot"></span>Site visit process content</li>
+        <li><span class="dot"></span>Real project BTS footage</li>
+        <li><span class="dot"></span>Emotional perspective reels</li>
+        <li><span class="dot"></span>Consistent series content</li>
+        <li><span class="dot"></span>Carousels with saved value</li>
+      </ul>
+      <div class="funnel-bar mid"></div>
+    </div>
+    <div class="funnel-stage">
+      <div class="funnel-stage-label">Bottom of Funnel</div>
+      <div class="funnel-stage-title">Convert</div>
+      <div class="funnel-stage-sub">Believers become clients</div>
+      <ul class="funnel-items">
+        <li><span class="dot"></span>My fee structure (transparent)</li>
+        <li><span class="dot"></span>Client testimonial content</li>
+        <li><span class="dot"></span>Before/after project reveals</li>
+        <li><span class="dot"></span>Direct CTAs: DM for consultation</li>
+        <li><span class="dot"></span>Free BOQ / checklist lead magnets</li>
+        <li><span class="dot"></span>Booking link in bio</li>
+      </ul>
+      <div class="funnel-bar bot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 30-DAY CALENDAR -->
+<section id="calendar" class="calendar-section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Execution</div>
+      <h2 class="section-title">30-Day Content Calendar</h2>
+    </div>
+    <div class="section-num">05</div>
+  </div>
+  <div style="display:flex;gap:2rem;margin-bottom:1.5rem;flex-wrap:wrap">
+    <span style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--terracotta);font-weight:500">■ Reel</span>
+    <span style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--forest);font-weight:500">■ Carousel</span>
+    <span style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:500">■ Story</span>
+  </div>
+  <div class="calendar-grid">
+    <div class="cal-header">Mon</div>
+    <div class="cal-header">Tue</div>
+    <div class="cal-header">Wed</div>
+    <div class="cal-header">Thu</div>
+    <div class="cal-header">Fri</div>
+    <div class="cal-header">Sat</div>
+    <div class="cal-header">Sun</div>
+
+    <!-- Week 1 -->
+    <div class="cal-cell"><div class="cal-day-num">1</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Pinterest + AI Can't Replace an Architect</div></div>
+    <div class="cal-cell"><div class="cal-day-num">2</div><div class="cal-content-type story">Story</div><div class="cal-topic">Poll: Have you hired an architect?</div></div>
+    <div class="cal-cell"><div class="cal-day-num">3</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">How to Read a Floor Plan</div></div>
+    <div class="cal-cell"><div class="cal-day-num">4</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">5 Ways Builders Overcharge You</div></div>
+    <div class="cal-cell"><div class="cal-day-num">5</div><div class="cal-content-type story">Story</div><div class="cal-topic">Answer top 3 DMs from the week</div></div>
+    <div class="cal-cell"><div class="cal-day-num">6</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Architect Brain vs Normal Brain</div></div>
+    <div class="cal-cell"><div class="cal-day-num">7</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">M-Sand vs River Sand: How to Check</div></div>
+
+    <!-- Week 2 -->
+    <div class="cal-cell"><div class="cal-day-num">8</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">Questions to Ask Before Signing</div></div>
+    <div class="cal-cell"><div class="cal-day-num">9</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">House vs Home: The Design Difference</div></div>
+    <div class="cal-cell"><div class="cal-day-num">10</div><div class="cal-content-type story">Story</div><div class="cal-topic">BTS: current project site visit</div></div>
+    <div class="cal-cell"><div class="cal-day-num">11</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Myth: Architects Are Only for Rich People</div></div>
+    <div class="cal-cell"><div class="cal-day-num">12</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">What I Look for at a First Site Visit</div></div>
+    <div class="cal-cell"><div class="cal-day-num">13</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">Electrical Layout Mistakes</div></div>
+    <div class="cal-cell"><div class="cal-day-num">14</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Hot Take: Architecture Education Is Broken</div></div>
+
+    <!-- Week 3 -->
+    <div class="cal-cell"><div class="cal-day-num">15</div><div class="cal-content-type story">Story</div><div class="cal-topic">This or That: Design Preference Poll</div></div>
+    <div class="cal-cell"><div class="cal-day-num">16</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Tanglish: Builder Scam Script</div></div>
+    <div class="cal-cell"><div class="cal-day-num">17</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">What Is a BOQ? Why You NEED One</div></div>
+    <div class="cal-cell"><div class="cal-day-num">18</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Architecture College vs Reality</div></div>
+    <div class="cal-cell"><div class="cal-day-num">19</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Climate Design for Tamil Nadu Homes</div></div>
+    <div class="cal-cell"><div class="cal-day-num">20</div><div class="cal-content-type story">Story</div><div class="cal-topic">Material selection BTS</div></div>
+    <div class="cal-cell"><div class="cal-day-num">21</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Red Flags in Builder Sample Flats</div></div>
+
+    <!-- Week 4 -->
+    <div class="cal-cell"><div class="cal-day-num">22</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">Staircase Mistakes in Indian Homes</div></div>
+    <div class="cal-cell"><div class="cal-day-num">23</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Why Indian Homes All Look the Same</div></div>
+    <div class="cal-cell"><div class="cal-day-num">24</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">My Actual Fee Structure (And Why)</div></div>
+    <div class="cal-cell"><div class="cal-day-num">25</div><div class="cal-content-type story">Story</div><div class="cal-topic">Ask Me Anything about construction</div></div>
+    <div class="cal-cell"><div class="cal-day-num">26</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Why Architects Burn Out</div></div>
+    <div class="cal-cell"><div class="cal-day-num">27</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">FSI Explained Simply</div></div>
+    <div class="cal-cell"><div class="cal-day-num">28</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Tanglish: Vastu vs Good Architecture</div></div>
+
+    <div class="cal-cell"><div class="cal-day-num">29</div><div class="cal-content-type reel">Reel</div><div class="cal-topic">Real Cost of Building in Tamil Nadu</div></div>
+    <div class="cal-cell"><div class="cal-day-num">30</div><div class="cal-content-type carousel">Carousel</div><div class="cal-topic">My Process: Brief to Final Design</div></div>
+    <div class="cal-empty"></div>
+    <div class="cal-empty"></div>
+    <div class="cal-empty"></div>
+    <div class="cal-empty"></div>
+    <div class="cal-empty"></div>
+  </div>
+</section>
+
+<!-- VIRAL REELS -->
+<section style="background:var(--white)">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">High-Impact</div>
+      <h2 class="section-title">10 Viral Reel Blueprints</h2>
+    </div>
+    <div class="section-num">06</div>
+  </div>
+  <div class="viral-grid">
+    <div class="viral-card">
+      <div class="viral-trend">POV Trend · High Reach</div>
+      <div class="viral-title">POV: Walking Into a Designed Home vs an Undesigned One</div>
+      <div class="viral-hook">"Same budget. Two completely different lives."</div>
+      <div class="viral-why">Shows your value without stating it. Emotional, visual, zero explaining needed. Let the space do the selling.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">React Trend · Architect Authority</div>
+      <div class="viral-title">Architect Reacts to AI-Generated Home Designs</div>
+      <div class="viral-hook">"I let AI design a Chennai home. Here's everything it got wrong."</div>
+      <div class="viral-why">Topical AI trend + professional authority. Gets shared by the tech crowd AND the architecture crowd simultaneously.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Money Breakdown · High Save Rate</div>
+      <div class="viral-title">Builder Quote Breakdown: Where Does ₹1 Crore Actually Go?</div>
+      <div class="viral-hook">"₹1,00,00,000. Let me show you exactly where it goes — and who keeps it."</div>
+      <div class="viral-why">Money content always outperforms. Shocking specificity drives saves and shares in equal measure.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Transformation · Visual Payoff</div>
+      <div class="viral-title">Transforming a 600 Sqft Plot Into a Beautiful Small Home</div>
+      <div class="viral-hook">"600 sqft. Everyone said nothing beautiful could fit. We disagreed."</div>
+      <div class="viral-why">Aspirational. Deeply relatable for urban homeowners with small plots. Visual reveal at the end drives saves and follows.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Before/After · Most Saved Format</div>
+      <div class="viral-title">Before/After: Redesigning a Badly Planned Indian Kitchen</div>
+      <div class="viral-hook">"This kitchen had everything in the wrong place. Here's the fix."</div>
+      <div class="viral-why">Most-saved content format on Instagram. Immediate value. Direct practical application that any homeowner can relate to.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Educational Walkthrough · Trust Builder</div>
+      <div class="viral-title">Checking Construction Quality Like an Architect</div>
+      <div class="viral-hook">"Walked into a random construction site. Found 7 problems in 10 minutes."</div>
+      <div class="viral-why">Exposé + education in one. POV walkthrough. Extremely high curiosity value. Shows expertise without a single word of self-promotion.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Personal Story · Deep Reach</div>
+      <div class="viral-title">I Designed My Own Home at 27 on ₹40 Lakhs</div>
+      <div class="viral-hook">"27 years old. ₹40 lakhs. One shot to get it right."</div>
+      <div class="viral-why">Personal narrative + budget constraints = maximum relatable content. Every young homeowner sees themselves in this story.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Rating Format · Engagement Driver</div>
+      <div class="viral-title">Architect Rates Viral Indian Home Videos</div>
+      <div class="viral-hook">"Rating the most-viewed Indian home tour videos as an architect…"</div>
+      <div class="viral-why">Reaction content rides existing video algorithms. Highly engaging. Opinionated content triggers comments and debates.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">Inspiration · High Save</div>
+      <div class="viral-title">3 Beautiful Indian Homes Built Under ₹50 Lakhs</div>
+      <div class="viral-hook">"Budget doesn't mean ugly. These three prove it."</div>
+      <div class="viral-why">Aspirational for real buyers. Massive save rate. Shows range and capability without a direct sales pitch.</div>
+    </div>
+    <div class="viral-card">
+      <div class="viral-trend">List Format · Broad Reach</div>
+      <div class="viral-title">5 Things I Notice at Every Construction Site (That Owners Miss)</div>
+      <div class="viral-hook">"What architects see that you don't — and why it matters to your budget."</div>
+      <div class="viral-why">Educational list with curiosity gap. High retention format. Every homeowner thinking of building will save this immediately.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSONAL BRAND STYLE GUIDE -->
+<section id="brand" class="alt-bg">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Identity</div>
+      <h2 class="section-title">Personal Brand Style Guide</h2>
+    </div>
+    <div class="section-num">07</div>
+  </div>
+  <div class="brand-grid">
+    <div class="brand-card">
+      <div class="brand-card-icon">🎙️</div>
+      <div class="brand-card-title">Voice & Tone</div>
+      <ul class="brand-rules">
+        <li>Confident, not arrogant. You know your craft — you don't need to prove it.</li>
+        <li>Sharp and direct. No filler words. No "um, so basically..."</li>
+        <li>Slightly edgy. You're willing to say what others in your field won't.</li>
+        <li>Warm when personal. Cold when technical. Switch between both fluidly.</li>
+        <li>Use Tanglish naturally — not forced. Let it emerge in the emotion.</li>
+        <li>Avoid academic jargon. Talk like a smart person explaining to a friend.</li>
+      </ul>
+    </div>
+    <div class="brand-card">
+      <div class="brand-card-icon">📷</div>
+      <div class="brand-card-title">Camera Presence</div>
+      <ul class="brand-rules">
+        <li>Always look directly into the lens. Not above it, not beside it.</li>
+        <li>Stand or sit at eye level. Never shoot from below — it distorts authority.</li>
+        <li>Background: site, desk with drawings, or clean minimal wall. Never random.</li>
+        <li>Clothing: clean, professional, warm tones. Never loud patterns on camera.</li>
+        <li>Hands visible when talking — gestures convey conviction.</li>
+        <li>Lapel mic always. Audio quality is non-negotiable.</li>
+      </ul>
+    </div>
+    <div class="brand-card">
+      <div class="brand-card-icon">✂️</div>
+      <div class="brand-card-title">Editing Style</div>
+      <ul class="brand-rules">
+        <li>Clean jump cuts. No flashy transitions. Restraint = premium.</li>
+        <li>Auto-captions always. Styled in one clean sans-serif, consistently.</li>
+        <li>Background music at -20dB — never louder than your voice.</li>
+        <li>Use text on screen to reinforce key points, not repeat them.</li>
+        <li>Cinematic content: slow, wide shots, architectural close-ups.</li>
+        <li>Pacing: fast for humor and lists. Slow for emotional or conceptual content.</li>
+      </ul>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border)">
+    <div style="background:var(--white);padding:2rem;">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Your Positioning</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--charcoal);line-height:1.4">"The architect who explains what builders don't want you to know."</div>
+    </div>
+    <div style="background:var(--white);padding:2rem;">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Your Audience Promise</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--charcoal);line-height:1.4">"I make architecture accessible to everyone building a life, not just a house."</div>
+    </div>
+    <div style="background:var(--white);padding:2rem;">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem">Your Niche Authority</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--charcoal);line-height:1.4">"Tamil Nadu's climate, culture, and construction — told by someone who lives and works here."</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLIENT CONVERSION -->
+<section>
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow">Growth</div>
+      <h2 class="section-title">Client Conversion Strategy</h2>
+    </div>
+    <div class="section-num">08</div>
+  </div>
+  <div class="conversion-steps">
+    <div class="conv-step">
+      <div class="conv-num">1</div>
+      <div class="conv-title">Discover</div>
+      <div class="conv-desc">Viral reel reaches a homeowner thinking of building. They watch it. They recognize you know something their builder doesn't.</div>
+    </div>
+    <div class="conv-step">
+      <div class="conv-num">2</div>
+      <div class="conv-title">Follow</div>
+      <div class="conv-desc">They check your profile. Your pinned posts confirm expertise. Your series shows consistency. Your personal reels show a real person.</div>
+    </div>
+    <div class="conv-step">
+      <div class="conv-num">3</div>
+      <div class="conv-title">Trust</div>
+      <div class="conv-desc">After 10–15 pieces of content, they believe you. They save your posts. They share them. They answer your CTAs.</div>
+    </div>
+    <div class="conv-step">
+      <div class="conv-num">4</div>
+      <div class="conv-title">Engage</div>
+      <div class="conv-desc">They DM for your free checklist. You respond personally. The conversation begins. You ask about their project.</div>
+    </div>
+    <div class="conv-step">
+      <div class="conv-num">5</div>
+      <div class="conv-title">Convert</div>
+      <div class="conv-desc">They book a consultation. They've already decided they want you. Instagram removed all sales friction.</div>
+    </div>
+  </div>
+  <div style="margin-top:4rem;display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--border)">
+    <div style="background:var(--cream-dark);padding:2.5rem">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem">Lead Magnet Ideas</div>
+      <ul style="list-style:none">
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Construction Checklist PDF" — send via DM on request</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"BOQ Template" — comment 'BOQ' to receive</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Questions to Ask Before Signing" — free download</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Site Visit Checklist" — for homeowners evaluating plots</li>
+      </ul>
+    </div>
+    <div style="background:var(--cream-dark);padding:2.5rem">
+      <div style="font-size:0.6rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.25rem">CTA Formulas That Convert</div>
+      <ul style="list-style:none">
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Comment 'BOQ' and I'll send you the template."</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"DM me your plot details — let's see what's possible."</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;border-bottom:1px solid var(--border);display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Taking 2 new projects this month. DM to discuss."</li>
+        <li style="font-size:0.8rem;color:var(--ash);padding:0.5rem 0;display:flex;gap:0.75rem"><span style="color:var(--gold)">→</span>"Save this before you sign anything."</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TANGLISH SCRIPTS -->
+<section id="scripts" class="scripts-section">
+  <div class="section-header">
+    <div>
+      <div class="section-eyebrow" style="color:var(--gold-light)">Bonus</div>
+      <h2 class="section-title" style="color:var(--cream)">3 Tanglish Reel Scripts</h2>
+    </div>
+    <div class="section-num">09</div>
+  </div>
+  <div class="scripts-grid">
+
+    <div class="script-card">
+      <div class="script-num">01</div>
+      <div class="script-title">Builder Scam Alert</div>
+      <div class="script-label">Awareness · High Share</div>
+      <div class="script-body">
+        <p class="hook">"Bro, un contractor enna solvaan theriyuma? 'Madam, rate same dhaan — just oru chhota sa change.' Adhan problem."</p>
+        <br>
+        <p>Paarungha — oru plot vaangrom, contractor quotation kudukiran: ₹1800 per sqft. Looks fine.</p>
+        <br>
+        <p>Construction starts. Two months later: 'Madam, tiles grade change pannuvoama? Little bit costly dhaan.' Month four: 'Flooring rate increase aachu.' Month six: ₹2800 per sqft.</p>
+        <br>
+        <p>Ithu scam ah theriyala? Because each change — small dhaan. But total? Huge.</p>
+        <br>
+        <p>Solution enna? BOQ. Bill of Quantities. Material-by-material, work-by-work breakdown. Un architect ku sollu — BOQ illama sign pannama nu. That's it.</p>
+        <br>
+        <p class="cta">→ Comment 'BOQ' below — I'll send you a checklist. Free.</p>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-num">02</div>
+      <div class="script-title">Pinterest vs Real Architecture</div>
+      <div class="script-label">Myth-Busting · Viral Potential</div>
+      <div class="script-body">
+        <p class="hook">"Pinterest la oru image save pannittu 'exactly like this' sollitta — architect mathiri feel aagudha? I get it. But listen."</p>
+        <br>
+        <p>Adhu image Pinterest la beautiful ah irukku. But adhu Chennai climate ku suit aagudha? Theriyala. Adhu un plot size ku fit aagudha? Theriyala. Approvable ah? Definitely theriyala.</p>
+        <br>
+        <p>AI generate pannadhu — same problem. Render ku nalla irukku. Reality la? Bathroom ventilation illama irukku. Staircase NBC norm follow pannala. Structural wall miss pannirukku.</p>
+        <br>
+        <p>Naan AI oppose pannalai. But AI + Pinterest is not a design. It's a reference. Design is understanding your site, your climate, your life — and solving it with space.</p>
+        <br>
+        <p class="cta">→ Un dream home ku proper design venum-na — DM pannunga. Let's talk.</p>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-num">03</div>
+      <div class="script-title">Climate Design for Tamil Nadu</div>
+      <div class="script-label">Educational · Local Relevance</div>
+      <div class="script-body">
+        <p class="hook">"Un veetu AC 12 hours run aagudha? Architecture blame pannunga — not the weather."</p>
+        <br>
+        <p>Chennai heat theriyum. But adhu solve aagum — proper design irunthalum.</p>
+        <br>
+        <p>Oru simple example: Un home east-west orientation la irunthaluma? Morning sun east la — bedroom hot. Evening sun west la — living room hot. AC all day.</p>
+        <br>
+        <p>North-south orientation la build pannirunthalum? Direct sun exposure kurayum. Cross-ventilation natural ah varum. AC hours half aagum.</p>
+        <br>
+        <p>Adichu solla mudiyaadha: Good architecture is free AC. Overhang, jaali, courtyard — these are not 'old design.' These are climate solutions that worked 500 years ago and still work today.</p>
+        <br>
+        <p class="cta">→ Un plot orientation pathi doubt irunthalum? Site plan photo podunga comment la — I'll tell you the best orientation. Free.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-brand">BU<span>I</span>LT — Architecture Strategy</div>
+    <div style="font-size:0.68rem;color:rgba(245,240,232,0.4);margin-top:0.35rem;letter-spacing:0.05em">Tamil Nadu · South India · Indian Homeowners</div>
+  </div>
+  <div class="footer-note">
+    50 Content Ideas · 8 Viral Series · 30-Day Calendar · Brand Guide · Tanglish Scripts<br>
+    Built for architects who design with intention — and grow with the same.
+  </div>
+</footer>
+
+</body>
+</html>
